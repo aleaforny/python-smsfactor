@@ -1,16 +1,9 @@
-# This is a sample Python script.
+# This is a sample example code. You can use this to test and validate the API
+from src.smsfactor.smsfactor import SMSFactorAPI
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    smsfactor = SMSFactorAPI(token="my_special_token")
+    print(smsfactor.credits)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+# See help at https://dev.smsfactor.com/
