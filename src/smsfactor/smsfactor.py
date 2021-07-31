@@ -1,6 +1,9 @@
 import requests, json
 from requests.exceptions import HTTPError, ConnectionError
-from .resources.exceptions import SMSFactorException
+
+
+class SMSFactorException(Exception):
+    pass
 
 
 class SMSFactorAPI:
