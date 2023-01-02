@@ -29,8 +29,11 @@ class SMSFactorAPI:
 
     @staticmethod
     def raise_for_smsfactor_exception(error):
-        if error['status'] != 1:
-            raise SMSFactorException(f"Error {error['status']}: {error['message']} ({error['details']})")
+        status = error.get('status', -1337)
+        if status == -1337:
+            raise SMSFactorException(f"Couldn't find status code in the error message")
+        if status != 1:
+            raise SMSFactorException(f"Error {error.get('status')}: {error.get('message', 'no_message')} ({error.get('details', 'no_details')})")
 
     def get(self, endpoint, data=None, get_response=False):
         """ Attempt a GET action. Returns None if request wasn't successful or raise Exception if attempted to GET when API is not connected """
