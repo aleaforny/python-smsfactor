@@ -41,18 +41,18 @@ class SMSFactorAPI:
         if not isinstance(data, dict):
             raise SMSFactorException(f"Expected 'data' to be a dictionary, but got {type(data).__name__}.")
 
-    @staticmethod
-    def encode_message_data(data):
-        message_data = data.get("sms", {}).get("message", {})
-        if not message_data:
-            raise SMSFactorException(f"Expected 'sms' and 'message' dictionaries in received data body.")
-
-        for key, value in message_data.items():
-            if isinstance(value, list) and key == "links":
-                data["sms"]["message"][key] = [SMSFactorAPI.encode_url(url) for url in value]
-        
-        return data
+    def search_key_and_update_value(self, dictionary, key, fn):
+        if key in dictionary:
+            dictionary[key] = fn(dictionary[key])
+        for v in dictionary.values():
+            if isinstance(v, dict):
+                self.search_key_and_update_value(v, key, fn)
+        return dictionary
     
+    def encode_message_data(self, data):
+        data = self.search_key_and_update_value(data, "links", lambda links: [self.encode_url(url) for url in links])
+        return data
+
     @staticmethod
     def encode_url(url):
         """Method to handle URL encoding/validation."""
@@ -98,10 +98,7 @@ class SMSFactorAPI:
         """ Attempt a POST action. Returns None if request wasn't successful or raise Exception if attempted to GET when API is not connected """
         try:
             self.validate_data(data)
-
-            if "send" in endpoint:
-                data = self.encode_message_data(data)
-            # TODO: Need to implement other endpoints("list", etc.)
+            data = self.encode_message_data(data)
 
             response = requests.post(self.url + endpoint, data=json.dumps(data), headers=self.headers)
             response.raise_for_status()
